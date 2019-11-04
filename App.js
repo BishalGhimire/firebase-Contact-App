@@ -1,19 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
-}
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import HomeScreen from './Screens/HomeScreen';
+import AddNewContactScreen from './Screens/AddNewContactScreen';
+import EditContactScreen from './Screens/EditContactScreen';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+
+const mainNavigator = createStackNavigator({
+  Home: {screen: HomeScreen},
+  Add: { screen: AddNewContactScreen},
+  View: {screen: AddNewContactScreen },
+  Edit: {screen: EditContactScreen}
 });
+
+const App = createAppContainer(mainNavigator);
+export default App;

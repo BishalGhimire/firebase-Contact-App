@@ -54,10 +54,65 @@ export default class EditContactScreen extends Component {
     this.getContact(key);
   }
   //TODO: getContact  method
-  getContact = key => {};
+  getContact = async key => {
+    let self = this;
+    let contactRef = firebase.database().ref().child(key);
+    await contactRef.on("value", dataSnapshot => {
+        if(dataSnapshot){
+            contactValue = dataSnapshot.val();
+            self.setState({
+                fname: contactValue.fname,
+                lname: contactValue.lname,
+                phone: contactValue.phone,
+                email: contactValue.email,
+                imageUrl: contactValue.imageUrl,
+                key: key,
+                isLoading: false
+
+
+            })
+        }
+    })
+
+
+  };
 
   //TODO: update contact method
-  updateContact = key => {};
+  updateContact = async key => {
+      if(this.state.fname !== "" && 
+      this.state.lname !== "" &&
+      this.state.email !== "" &&
+      this.state.phone !== "" &&
+      this.state.address !== ""
+      
+      ){
+          this.setState({
+              isUploading: true
+          })
+          const dbReference = firebase.database().ref();
+          const storageRef = firebase.storage().ref();
+          if(this.state.image !== "empty"){
+              const dowloadURL = await this.uploadImageAsync(
+                  this.state.image, storageRef
+              )
+              this.setState({imageDownloadUrl : downloadUrl})
+          }
+          var contact = {
+              fname : this.state.fname, 
+              lname : this.state.lname, 
+              email : this.state.email, 
+              phone : this.state.phone, 
+              address : this.state.address, 
+              imageUrl : this.state.imageUrl
+          }
+
+          await dbReference.child(key).set(contact, error => {
+              if(!error){
+                  return this.props.navigation.goBack();
+              }
+          });
+      }
+  };
 
   //TODO: pick image from gallery
   pickImage = async () => {

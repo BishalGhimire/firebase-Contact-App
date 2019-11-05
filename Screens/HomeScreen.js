@@ -13,7 +13,7 @@ import { Card } from "native-base";
 import { Entypo } from "@expo/vector-icons";
 
 //TODO: add firebase
-
+import * as firebase from 'firebase'
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     // set screen header name
@@ -37,9 +37,43 @@ export default class HomeScreen extends React.Component {
   getAllContact = () => {
     let self = this;
     //TODO: get all contact from firebase
+    let contactRef = firebase.database().ref();
+    contactRef.on("value", dataSnapshot => {
+        if(dataSnapshot.val()){
+            let contactResult = Object.values(dataSnapshot.val())
+            let contactKey = Object.keys(dataSnapshot.val())
 
+            contactKey.forEach((value, key) => {
+                contactResult[key]["key"] = value;
+            })
+            // sort array by fname and set it to data state
+    self.setState({
+        data: contactResult.sort((a, b) => {
+            var nameA = a.fname.toUpperCase();
+            var nameB = b.fname.toUpperCase();
+
+            if(nameA < nameB){
+                return -1
+            }
+            else  if(nameA > nameB){
+                return 1
+            }
+            return 0
+        }),
+        isListEmpty : false
+    })
+        }
+        else {
+            self.setState({
+                isListEmpty: true
+            })
+        }
+        self.setState({isLoading: false})
+
+    })
     //TODO:
-    // sort array by fname and set it to data state
+    
+
   };
 
   // render method

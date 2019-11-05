@@ -42,7 +42,28 @@ export default class ViewScreen extends Component {
   }
 
   //TODO: get contact from firebase
-  getContact = key => {};
+  getContact = async key => {
+    let self = this;
+    let contactRef = firebase.database().ref().child(key);
+    await contactRef.on("value", dataSnapshot => {
+        if(dataSnapshot){
+            contactValue = dataSnapshot.val();
+            self.setState({
+                fname: contactValue.fname,
+                lname: contactValue.lname,
+                phone: contactValue.phone,
+                email: contactValue.email,
+                imageUrl: contactValue.imageUrl,
+                key: key,
+                isLoading: false
+
+
+            })
+        }
+    })
+
+
+  };
 
   //This was already explained in AsyncStorage section
   callAction = phone => {

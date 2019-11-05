@@ -152,6 +152,7 @@ export default class EditContactScreen extends Component {
         xhr.responseType = "blob";
         xhr.open("GET", uri, true)
         xhr.send(null);
+    })
 
         //send to firebase
         const ref = storageRef.child("ContactImages").child(uuid.v4() + "." + fileExtension);
@@ -162,7 +163,7 @@ export default class EditContactScreen extends Component {
         blob.close();
 
         return await snapshot.ref.getDownloadURL();
-    })
+ 
 
 
   };

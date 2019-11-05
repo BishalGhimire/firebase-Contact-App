@@ -36,13 +36,46 @@ export default class AddNewContactScreen extends Component {
         email : "",
         address : "",
         image : "empty",
-        imageDownloadUrl: "empty",
+        imageURL: "empty",
         isUploading : false
       }
   }
 
   //TODO: savecontact method
-  saveContact = () => {
+  saveContact = async () => {
+    if(
+        this.state.fname !== "" && 
+        this.state.lname !== "" && 
+        this.state.email !== "" && 
+        this.state.phone !== "" && 
+        this.state.address !== "" 
+     ) {
+         this.setState({isUploading: false})
+        const dbReference = firebase.database().ref();
+        const storageRef = firebase.storage.ref();
+        if(this.state.image !== "empty"){
+        const downloadURL = await this.uploadImageAsync(this.state.image, storageRef);
+        this.setState({imageURL: downloadURL})
+
+        }
+        var contact = {
+            fname: this.state.fname,
+            lname: this.state.lname,
+            phone: this.state.phone,
+            email: this.state.email,
+            imageURL: this.state.imageURL
+        }
+
+        await dbReference.push(contact, error => {
+            if(!error){
+                return this.props.navigation.goBack();
+            }
+        })
+
+         }
+
+
+
     // create and save contact to firebase
   };
   //TODO: pick image from gallery

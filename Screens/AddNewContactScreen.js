@@ -12,31 +12,90 @@ import {
   Image
 } from "react-native";
 
-//TODO: Read about UUID
+import uuid from 'uuid';
 
 import { Form, Item, Input, Label, Button } from "native-base";
 
 import { ImagePicker } from "expo";
 import { Header } from "react-navigation";
 
-//TODO: add firebase
+import * as firebase from 'firebase';
+import { resolve } from "path";
 
 export default class AddNewContactScreen extends Component {
   static navigationOptions = {
-    // set screen header title
     title: "Add Contact"
   };
-  //TODO: create constructor with state: fname, lname, phone, email, address, image, imageDownloadUrl, isUploading
+
+  constructor (props){
+      super(props);
+      this.state = {
+        fname : "",
+        lname : "",
+        phone : "",
+        email : "",
+        address : "",
+        image : "empty",
+        imageDownloadUrl: "empty",
+        isUploading : false
+      }
+  }
 
   //TODO: savecontact method
   saveContact = () => {
     // create and save contact to firebase
   };
   //TODO: pick image from gallery
-  pickImage = () => {};
+  pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+        quality: 0.2,
+        base64: true,
+        allowEditing: true,
+        aspect: [1,1],
+
+    });
+    if(!result.cancelled){
+        this.setState({ image: result.uri })
+    }
+
+  };
 
   //TODO: upload image to firebase
-  uploadImageAsync = (uri, storageRef) => {};
+  uploadImageAsync = async (uri, storageRef) => {
+    const parts = uri.split(".");
+    const fileExtension = parts[parts.length -1]
+
+    //create blob
+    const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function(){
+            resolve(xhr.response)
+        }
+        xhr.onerror = function(e){
+            console.log(e)
+            reject(new TypeError("Network Request Failed"))
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null)
+
+    })
+
+    //upload parts
+    const ref = storageRef
+    .child("ContactImages")
+    .child(uuid.v4() + "." + fileExtension);
+
+    const snapshot = await ref.put(blob);
+
+
+    //close blob
+    blob.close()
+    return await snapshot.ref.getDownloadURL()
+
+
+
+  };
 
   //render method
   render() {

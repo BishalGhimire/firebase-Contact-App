@@ -69,6 +69,7 @@ export default class AddNewContactScreen extends Component {
         await dbReference.push(contact, error => {
             if(!error){
                 return this.props.navigation.goBack();
+                
             }
         })
 

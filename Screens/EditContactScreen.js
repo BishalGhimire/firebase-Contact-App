@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 //TODO: Add UUID
+import uuid from 'uuid';
 
 import { ImagePicker } from "expo";
 
@@ -22,6 +23,9 @@ import { Form, Item, Input, Label, Button } from "native-base";
 import { Header } from "react-navigation";
 
 //TODO: add firebase
+import * as firebase from 'firebase'
+import { resolve } from "url";
+import { rejects } from "assert";
 
 export default class EditContactScreen extends Component {
   static navigationOptions = {
@@ -56,10 +60,57 @@ export default class EditContactScreen extends Component {
   updateContact = key => {};
 
   //TODO: pick image from gallery
-  pickImage = async () => {};
+  pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync(
+        {
+            quality: 0.2,
+            base64: true,
+            allowsEditing: true,
+            aspect: [1,1]
+
+        }
+    )
+    if(!result.cancelled){
+        this.setState({ image: result.uri });
+
+    }
+
+
+  };
 
   //TODO: upload to firebase
-  uploadImageAsync = (uri, storageRef) => {};
+  uploadImageAsync = (uri, storageRef) => {
+    const parts = uri.split(".");
+    const fileExtension =parts[parts.length -1];
+    
+
+    //creating blob
+    const blob =await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function(){
+            resolve(xhr.response)
+        }
+        xhr.onerror = function(){
+            console.log(error)
+            reject(new TypeError("Network request failed"))
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true)
+        xhr.send(null);
+
+        //send to firebase
+        const ref = storageRef.child("ContactImages").child(uuid.v4() + "." + fileExtension);
+
+        const snapshot = await ref.put(blob);
+
+        //close blob
+        blob.close();
+
+        return await snapshot.ref.getDownloadURL();
+    })
+
+
+  };
 
   // render method
   render() {

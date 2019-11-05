@@ -115,14 +115,14 @@ export default class ViewScreen extends Component {
   deleteContact = key => {
     Alert.alert(
         "Delete Contact ",
-        `${this.state.fname} ${this.state.lname}`
+        `${this.state.fname} ${this.state.lname}`,
         [
             {text: "Cancel", onPress: ()=>console.log("Cancelled pressed")},
             {text: "Delete", onPress: async () =>{
                 let contactRef = firebase.database().ref().child(key);
                 await contactRef.remove(error => {
                     if(!error){
-                        this.props.navigation.navigate.goBack();
+                        this.props.navigation.goBack();
                     }
                     else{console.log(error)}
                 })

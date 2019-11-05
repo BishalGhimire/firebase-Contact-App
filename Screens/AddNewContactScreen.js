@@ -14,13 +14,14 @@ import {
 
 import uuid from 'uuid';
 
-import { Form, Item, Input, Label, Button } from "native-base";
-
-import { ImagePicker } from "expo";
-import { Header } from "react-navigation";
+import { Form, Item, Input, Label, Button } from "native-base";3
+import * as ImagePicker  from "expo-image-picker";
+import Promise from 'expo';
+import { Header } from "react-navigation-stack";
 
 import * as firebase from 'firebase';
-import { resolve } from "path";
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
 
 export default class AddNewContactScreen extends Component {
   static navigationOptions = {
@@ -41,6 +42,20 @@ export default class AddNewContactScreen extends Component {
       }
   }
 
+
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status == 'granted') {
+        this.pickImage();
+      }
+      else if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  }
+ 
+
   //TODO: savecontact method
   saveContact = async () => {
     if(
@@ -52,7 +67,7 @@ export default class AddNewContactScreen extends Component {
      ) {
          this.setState({isUploading: false})
         const dbReference = firebase.database().ref();
-        const storageRef = firebase.storage.ref();
+        const storageRef = firebase.storage().ref();
         if(this.state.image !== "empty"){
         const downloadURL = await this.uploadImageAsync(this.state.image, storageRef);
         this.setState({imageURL: downloadURL})
@@ -69,19 +84,16 @@ export default class AddNewContactScreen extends Component {
         await dbReference.push(contact, error => {
             if(!error){
                 return this.props.navigation.goBack();
-                
+
             }
         })
 
          }
 
-
-
-    // create and save contact to firebase
   };
-  //TODO: pick image from gallery
+  // pick image from gallery
   pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchImageLibaryAsync({
         quality: 0.2,
         base64: true,
         allowEditing: true,
@@ -94,7 +106,6 @@ export default class AddNewContactScreen extends Component {
 
   };
 
-  //TODO: upload image to firebase
   uploadImageAsync = async (uri, storageRef) => {
     const parts = uri.split(".");
     const fileExtension = parts[parts.length -1]
@@ -115,7 +126,6 @@ export default class AddNewContactScreen extends Component {
 
     })
 
-    //upload parts
     const ref = storageRef
     .child("ContactImages")
     .child(uuid.v4() + "." + fileExtension);
@@ -123,7 +133,6 @@ export default class AddNewContactScreen extends Component {
     const snapshot = await ref.put(blob);
 
 
-    //close blob
     blob.close()
     return await snapshot.ref.getDownloadURL()
 
@@ -160,7 +169,7 @@ export default class AddNewContactScreen extends Component {
           <ScrollView style={styles.container}>
             <TouchableOpacity
               onPress={() => {
-                this.pickImage();
+                this.getPermissionAsync();
               }}
             >
               <Image

@@ -20,12 +20,11 @@ import { ImagePicker } from "expo";
 
 import { Form, Item, Input, Label, Button } from "native-base";
 
-import { Header } from "react-navigation";
+import { Header } from "react-navigation-stack";
 
 //TODO: add firebase
 import * as firebase from 'firebase'
-import { resolve } from "url";
-import { rejects } from "assert";
+
 
 export default class EditContactScreen extends Component {
   static navigationOptions = {
@@ -65,6 +64,7 @@ export default class EditContactScreen extends Component {
                 lname: contactValue.lname,
                 phone: contactValue.phone,
                 email: contactValue.email,
+                address: contactValue.address,
                 imageUrl: contactValue.imageUrl,
                 key: key,
                 isLoading: false
@@ -95,7 +95,7 @@ export default class EditContactScreen extends Component {
               const dowloadURL = await this.uploadImageAsync(
                   this.state.image, storageRef
               )
-              this.setState({imageDownloadUrl : downloadUrl})
+              this.setState({imageDownloadUrl : dowloadURL})
           }
           var contact = {
               fname : this.state.fname, 
@@ -134,13 +134,13 @@ export default class EditContactScreen extends Component {
   };
 
   //TODO: upload to firebase
-  uploadImageAsync = (uri, storageRef) => {
+  uploadImageAsync = async (uri, storageRef) => {
     const parts = uri.split(".");
     const fileExtension =parts[parts.length -1];
     
 
     //creating blob
-    const blob =await new Promise((resolve, reject) => {
+    const blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.onload = function(){
             resolve(xhr.response)
@@ -177,7 +177,7 @@ export default class EditContactScreen extends Component {
         >
           <ActivityIndicator size="large" color="#B83227" />
           <Text style={{ textAlign: "center" }}>
-            Contact Updateing please wait..
+            Contact Updating please wait..
           </Text>
         </View>
       );

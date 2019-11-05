@@ -1,5 +1,4 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
 import * as firebase from 'firebase';
 
 import { createAppContainer } from 'react-navigation';
@@ -7,12 +6,13 @@ import { createStackNavigator } from 'react-navigation-stack';
 import HomeScreen from './Screens/HomeScreen';
 import AddNewContactScreen from './Screens/AddNewContactScreen';
 import EditContactScreen from './Screens/EditContactScreen';
+import ViewScreen from './Screens/ViewScreen';
 
 
 const mainNavigator = createStackNavigator({
   Home: {screen: HomeScreen},
   Add: { screen: AddNewContactScreen},
-  View: {screen: AddNewContactScreen },
+  View: {screen: ViewScreen },
   Edit: {screen: EditContactScreen}
 });
 

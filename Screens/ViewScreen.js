@@ -15,8 +15,7 @@ import {
 import { Card, CardItem } from "native-base";
 import { Entypo } from "@expo/vector-icons";
 
-//TODO: add firebase
-
+import * as firebase from 'firebase';
 export default class ViewScreen extends Component {
   static navigationOptions = {
     title: "View Contact"
@@ -69,7 +68,6 @@ export default class ViewScreen extends Component {
       }) //log error if any
       .catch(err => console.log(err));
   };
-  //This was already explained in AsyncStorage section
   // sms action
   smsAction = phone => {
     // paas phone number
@@ -93,7 +91,28 @@ export default class ViewScreen extends Component {
   };
 
   //TODO:  deleteContact method
-  deleteContact = key => {};
+  deleteContact = key => {
+    Alert.alert(
+        "Delete Contact ",
+        `${this.state.fname} ${this.state.lname}`
+        [
+            {text: "Cancel", onPress: ()=>console.log("Cancelled pressed")},
+            {text: "Delete", onPress: async () =>{
+                let contactRef = firebase.database().ref().child(key);
+                await contactRef.remove(error => {
+                    if(!error){
+                        this.props.navigation.navigate.goBack();
+                    }
+                    else{console.log(error)}
+                })
+            }}
+        ],
+        {cancelable : false }
+    )
+
+
+
+  };
 
   // editContact function
   editContact = key => {

@@ -71,12 +71,10 @@ export default class HomeScreen extends React.Component {
         self.setState({isLoading: false})
 
     })
-    //TODO:
     
 
   };
 
-  // render method
   render() {
     // if its loading show ActivityIndicator
     if (this.state.isLoading) {

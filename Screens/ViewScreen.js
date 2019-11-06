@@ -43,16 +43,21 @@ export default class ViewScreen extends Component {
 
   //TODO: get contact from firebase
   getContact = async key => {
+    
     let self = this;
     let contactRef = firebase.database().ref().child(key);
     await contactRef.on("value", dataSnapshot => {
         if(dataSnapshot){
-            contactValue = dataSnapshot.val();
+            const contactValue = dataSnapshot.val();
+            if (!contactValue) return;
+            
+
             self.setState({
                 fname: contactValue.fname,
                 lname: contactValue.lname,
                 phone: contactValue.phone,
                 email: contactValue.email,
+                address: contactValue.address,
                 imageUrl: contactValue.imageUrl,
                 key: key,
                 isLoading: false
@@ -120,6 +125,7 @@ export default class ViewScreen extends Component {
             {text: "Cancel", onPress: ()=>console.log("Cancelled pressed")},
             {text: "Delete", onPress: async () =>{
                 let contactRef = firebase.database().ref().child(key);
+                
                 await contactRef.remove(error => {
                     if(!error){
                         this.props.navigation.goBack();

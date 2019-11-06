@@ -16,7 +16,7 @@ import {
 //TODO: Add UUID
 import uuid from 'uuid';
 
-import { ImagePicker } from "expo";
+import * as ImagePicker from "expo-image-picker";
 
 import { Form, Item, Input, Label, Button } from "native-base";
 
@@ -52,6 +52,7 @@ export default class EditContactScreen extends Component {
     var key = this.props.navigation.getParam("key", "");
     this.getContact(key);
   }
+ 
   //TODO: getContact  method
   getContact = async key => {
     let self = this;
@@ -78,6 +79,7 @@ export default class EditContactScreen extends Component {
   };
 
   //TODO: update contact method
+  
   updateContact = async key => {
       if(this.state.fname !== "" && 
       this.state.lname !== "" &&
@@ -95,7 +97,7 @@ export default class EditContactScreen extends Component {
               const dowloadURL = await this.uploadImageAsync(
                   this.state.image, storageRef
               )
-              this.setState({imageDownloadUrl : dowloadURL})
+              this.setState({imageUrl : dowloadURL})
           }
           var contact = {
               fname : this.state.fname, 
@@ -190,7 +192,6 @@ export default class EditContactScreen extends Component {
       >
         <TouchableWithoutFeedback
           onPress={() => {
-            // dismiss the keyboard if touch any other area then input
             Keyboard.dismiss();
           }}
         >

@@ -14,14 +14,13 @@ import {
 
 import uuid from 'uuid';
 
-import { Form, Item, Input, Label, Button } from "native-base";3
+import { Form, Item, Input, Label, Button } from "native-base";
 import * as ImagePicker  from "expo-image-picker";
 import Promise from 'expo';
 import { Header } from "react-navigation-stack";
 
 import * as firebase from 'firebase';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
+
 
 export default class AddNewContactScreen extends Component {
   static navigationOptions = {
@@ -43,44 +42,33 @@ export default class AddNewContactScreen extends Component {
   }
 
 
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status == 'granted') {
-        this.pickImage();
-      }
-      else if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  }
- 
-
-  //TODO: savecontact method
   saveContact = async () => {
-    if(
-        this.state.fname !== "" && 
-        this.state.lname !== "" && 
-        this.state.email !== "" && 
-        this.state.phone !== "" && 
-        this.state.address !== "" 
-     ) {
-         this.setState({isUploading: false})
+    if(this.state.fname !== "" && 
+    this.state.lname !== "" &&
+    this.state.email !== "" &&
+    this.state.phone !== "" &&
+    this.state.address !== ""
+    
+    ){
+        this.setState({
+            isUploading: true
+        })
         const dbReference = firebase.database().ref();
         const storageRef = firebase.storage().ref();
         if(this.state.image !== "empty"){
-        const downloadURL = await this.uploadImageAsync(this.state.image, storageRef);
-        this.setState({imageURL: downloadURL})
-
+            const dowloadURL = await this.uploadImageAsync(
+                this.state.image, storageRef
+            )
+            this.setState({imageUrl : dowloadURL})
         }
         var contact = {
-            fname: this.state.fname,
-            lname: this.state.lname,
-            phone: this.state.phone,
-            email: this.state.email,
-            imageURL: this.state.imageURL
+            fname : this.state.fname, 
+            lname : this.state.lname, 
+            email : this.state.email, 
+            phone : this.state.phone, 
+            address : this.state.address, 
+            imageUrl : this.state.imageUrl
         }
-
         await dbReference.push(contact, error => {
             if(!error){
                 return this.props.navigation.goBack();
@@ -93,16 +81,20 @@ export default class AddNewContactScreen extends Component {
   };
   // pick image from gallery
   pickImage = async () => {
-    let result = await ImagePicker.launchImageLibaryAsync({
-        quality: 0.2,
-        base64: true,
-        allowEditing: true,
-        aspect: [1,1],
+    let result = await ImagePicker.launchImageLibraryAsync(
+        {
+            quality: 0.2,
+            base64: true,
+            allowsEditing: true,
+            aspect: [1,1]
 
-    });
+        }
+    )
     if(!result.cancelled){
-        this.setState({ image: result.uri })
+        this.setState({ image: result.uri });
+
     }
+
 
   };
 
@@ -156,20 +148,19 @@ export default class AddNewContactScreen extends Component {
     }
     return (
       <KeyboardAvoidingView
-        keyboardVerticalOffset={Header.HEIGHT + 20} // adjust the value here if you need more padding
+        keyboardVerticalOffset={Header.HEIGHT + 20} 
         style={{ flex: 1 }}
         behavior="padding"
       >
         <TouchableWithoutFeedback
           onPress={() => {
-            // dismiss the keyboard if touch any other area then input
             Keyboard.dismiss();
           }}
         >
           <ScrollView style={styles.container}>
             <TouchableOpacity
               onPress={() => {
-                this.getPermissionAsync();
+                this.pickImage();
               }}
             >
               <Image

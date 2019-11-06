@@ -109,12 +109,14 @@ export default class HomeScreen extends React.Component {
         </View>
       );
     }
+
     // return list of contacts
     return (
       <View style={styles.container}>
         <FlatList
           data={this.state.data}
           renderItem={({ item }) => {
+           
             return (
               <TouchableOpacity
                 onPress={() => {
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
   contactIcon: {
     width: 60,
     height: 60,
-    borderRadius: 100
+    borderRadius: 10
   },
   infoContainer: {
     flexDirection: "column"
